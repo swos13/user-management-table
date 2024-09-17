@@ -9,8 +9,8 @@ export type User = {
 export type Header = "name" | "username" | "email" | "phone";
 
 export type Filters = {
-  name: string;
-  username: string;
-  email: string;
-  phone: string;
+  name?: string;
+  username?: string;
+  email?: string;
+  phone?: string;
 };

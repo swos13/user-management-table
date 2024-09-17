@@ -15,12 +15,7 @@ type ActionFilter = {
   };
 };
 
-const filters: Filters = {
-  name: "",
-  username: "",
-  email: "",
-  phone: "",
-};
+const filters: Filters = {};
 
 const initialState: UsersTableState = {
   filters,
@@ -33,7 +28,8 @@ const usersSlice = createSlice({
   initialState,
   reducers: {
     updateFilter: (state, { payload }: ActionFilter) => {
-      state.filters[payload.property] = payload.value;
+      if (!payload.value) delete state.filters[payload.property];
+      else state.filters[payload.property] = payload.value;
     },
     clearFilters: (state) => {
       state.filters = filters;

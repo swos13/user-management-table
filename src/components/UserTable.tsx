@@ -9,6 +9,8 @@ import {
   Paper,
   Input,
   Button,
+  Box,
+  Typography,
 } from "@mui/material";
 import UserRow from "./UserRow";
 import {
@@ -25,14 +27,13 @@ import { Header, User } from "@/types";
 type TableHeader = {
   field: Header;
   headerName: string;
-  width: number;
 };
 
 const tableHeaders: TableHeader[] = [
-  { field: "name", headerName: "Name", width: 150 },
-  { field: "username", headerName: "Username", width: 150 },
-  { field: "email", headerName: "Email", width: 250 },
-  { field: "phone", headerName: "Phone", width: 200 },
+  { field: "name", headerName: "Name" },
+  { field: "username", headerName: "Username" },
+  { field: "email", headerName: "Email" },
+  { field: "phone", headerName: "Phone" },
 ];
 
 export default function UserTable() {
@@ -45,47 +46,84 @@ export default function UserTable() {
 
   return (
     <>
-      <TableContainer component={Paper}>
+      <Typography
+        variant="h1"
+        sx={{
+          mt: "32px",
+          textAlign: "center",
+          fontSize: { xs: "16px", sm: "30px" },
+        }}
+      >
+        User management table
+      </Typography>
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          gap: "16px",
+          p: "32px",
+        }}
+      >
         <Button
+          variant="outlined"
           onClick={() => {
             dispatch(clearFilters());
             dispatch(filter());
           }}
+          sx={{
+            width: { xs: "120px", sm: "150px", md: "180px" },
+            textAlign: "center",
+            fontSize: { xs: "10px", sm: "14px", md: "18px" },
+          }}
+          disabled={Object.keys(usersTableState.filters).length === 0}
         >
           Clear filters
         </Button>
-        <Table>
-          <TableHead>
-            <TableRow>
-              {tableHeaders.map((header, index) => (
-                <TableCell key={index}>
-                  <Input
-                    sx={{
-                      "&::before": { borderBottom: "none" },
-                    }}
-                    placeholder={header.headerName}
-                    value={usersTableState.filters[header.field]}
-                    onChange={(e) => {
-                      dispatch(
-                        updateFilter({
-                          property: header.field,
-                          value: e.target.value,
-                        })
-                      );
-                      dispatch(filter());
-                    }}
-                  />
-                </TableCell>
+        <TableContainer component={Paper}>
+          <Table>
+            <TableHead>
+              <TableRow
+                sx={{
+                  "& input": {
+                    fontSize: { xs: "10px", sm: "12px", md: "16px" },
+                  },
+                }}
+              >
+                {tableHeaders.map((header, index) => (
+                  <TableCell key={index}>
+                    <Input
+                      sx={{
+                        "&::before": { borderBottom: "none" },
+                      }}
+                      placeholder={header.headerName}
+                      value={usersTableState.filters[header.field] || ""}
+                      onChange={(e) => {
+                        dispatch(
+                          updateFilter({
+                            property: header.field,
+                            value: e.target.value,
+                          })
+                        );
+                        dispatch(filter());
+                      }}
+                    />
+                  </TableCell>
+                ))}
+              </TableRow>
+            </TableHead>
+            <TableBody
+              sx={{
+                "& td": { fontSize: { xs: "8px", sm: "10px", md: "14px" } },
+              }}
+            >
+              {usersTableState.users.map((user: User) => (
+                <UserRow key={user.id} user={user} />
               ))}
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {usersTableState.users.map((user: User) => (
-              <UserRow key={user.id} user={user} />
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </Box>
     </>
   );
 }
