@@ -1,3 +1,4 @@
+"use client";
 import {
   Table,
   TableBody,
@@ -6,39 +7,85 @@ import {
   TableHead,
   TableRow,
   Paper,
+  Input,
+  Button,
 } from "@mui/material";
-import type { User } from "../types";
 import UserRow from "./UserRow";
+import {
+  getInitialData,
+  updateFilter,
+  filter,
+  clearFilters,
+} from "@/state/usersTable/usersTableSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState, AppDispatch } from "@/state/store";
+import { useEffect } from "react";
+import { Header, User } from "@/types";
 
-interface TableProps {
-  users: User[];
-}
+type TableHeader = {
+  field: Header;
+  headerName: string;
+  width: number;
+};
 
-const tableHeaders = [
+const tableHeaders: TableHeader[] = [
   { field: "name", headerName: "Name", width: 150 },
   { field: "username", headerName: "Username", width: 150 },
   { field: "email", headerName: "Email", width: 250 },
   { field: "phone", headerName: "Phone", width: 200 },
 ];
 
-export default function UserTable({ users }: TableProps) {
-  const headers = tableHeaders.map((header, index) => (
-    <TableCell key={index}>{header.headerName}</TableCell>
-  ));
-  console.log(users);
+export default function UserTable() {
+  const usersTableState = useSelector((state: RootState) => state.usersTable);
+  const dispatch = useDispatch<AppDispatch>();
+
+  useEffect(() => {
+    dispatch(getInitialData());
+  }, [dispatch]);
 
   return (
-    <TableContainer component={Paper}>
-      <Table>
-        <TableHead>
-          <TableRow>{headers}</TableRow>
-        </TableHead>
-        <TableBody>
-          {users.map((user) => (
-            <UserRow key={user.id} user={user} />
-          ))}
-        </TableBody>
-      </Table>
-    </TableContainer>
+    <>
+      <TableContainer component={Paper}>
+        <Button
+          onClick={() => {
+            dispatch(clearFilters());
+            dispatch(filter());
+          }}
+        >
+          Clear filters
+        </Button>
+        <Table>
+          <TableHead>
+            <TableRow>
+              {tableHeaders.map((header, index) => (
+                <TableCell key={index}>
+                  <Input
+                    sx={{
+                      "&::before": { borderBottom: "none" },
+                    }}
+                    placeholder={header.headerName}
+                    value={usersTableState.filters[header.field]}
+                    onChange={(e) => {
+                      dispatch(
+                        updateFilter({
+                          property: header.field,
+                          value: e.target.value,
+                        })
+                      );
+                      dispatch(filter());
+                    }}
+                  />
+                </TableCell>
+              ))}
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {usersTableState.users.map((user: User) => (
+              <UserRow key={user.id} user={user} />
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    </>
   );
 }

@@ -1,3 +1,4 @@
+"use client";
 import { User } from "@/types";
 import { TableCell, TableRow } from "@mui/material";
 

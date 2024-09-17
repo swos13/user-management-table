@@ -1,9 +1,10 @@
-import getUsers from "../api";
-import type { User } from "../types";
 import UserTable from "@/components/UserTable";
+import ReduxProvider from "./providers/ReduxProvider";
 
 export default async function Home() {
-  const users: User[] = await getUsers();
-
-  return <UserTable users={users}></UserTable>;
+  return (
+    <ReduxProvider>
+      <UserTable></UserTable>
+    </ReduxProvider>
+  );
 }
